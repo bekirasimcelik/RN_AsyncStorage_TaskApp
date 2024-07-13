@@ -7,15 +7,54 @@ import {
   TouchableOpacity,
   FlatList,
 } from 'react-native';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
+import {LogBox} from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import uuid from 'react-native-uuid';
+
+LogBox.ignoreAllLogs(true);
 
 export default function App() {
   const [todo, setTodo] = useState('');
-  const [todos, setTodos] = useState(['']);
+  const [todos, setTodos] = useState([]);
+
+  const saveTodos = async saveTodo => {
+    try {
+      await AsyncStorage.setItem('todos', JSON.stringify(saveTodo));
+    } catch (error) {
+      console.log('error', error);
+    }
+  };
 
   const addTodo = () => {
-    setTodos([...todos, {id: Date.now(), text: todo}]);
+    if (todo) {
+      const updatedTodos = [...todos, {id: uuid.v4(), text: todo}];
+      setTodos(updatedTodos);
+      saveTodos(updatedTodos);
+    }
   };
+
+  const loadTodos = async () => {
+    // try {
+    //   await AsyncStorage.removeItem('todos');
+    // } catch (error) {}
+    try {
+      const storedData = await AsyncStorage.getItem('todos');
+      if (storedData) {
+        setTodos(JSON.parse(storedData));
+      }
+    } catch (error) {}
+  };
+
+  const deleteTodo = async id => {
+    const updatedTodo = todos?.filter(x => x.id !== id);
+    setTodos(updatedTodo);
+    saveTodos(updatedTodo);
+  };
+
+  useEffect(() => {
+    loadTodos();
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -38,12 +77,13 @@ export default function App() {
         <FlatList
           keyExtractor={item => item.id?.toString()}
           data={todos}
-          renderItem={item => (
+          renderItem={({item}) => (
             <View style={styles.todoitem}>
-              <Text style={{color: '#000000'}}>text</Text>
+              <Text style={{color: '#000000'}}>{item?.text}</Text>
               <View style={{flexDirection: 'row'}}>
                 <View style={styles.buttonContainer}>
                   <TouchableOpacity
+                    onPress={() => deleteTodo(item?.id)}
                     style={[styles.button, styles.deleteButton]}>
                     <Text style={styles.buttonText}>Delete</Text>
                   </TouchableOpacity>
