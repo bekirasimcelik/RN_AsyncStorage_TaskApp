@@ -65,6 +65,8 @@ export default function App() {
         setTodos(updatedTodos);
         saveTodos(updatedTodos);
       }
+      'plain-text',
+      exitingTodo.text,
     });
   };
 
