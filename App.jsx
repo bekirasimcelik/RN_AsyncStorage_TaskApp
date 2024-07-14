@@ -6,6 +6,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   FlatList,
+  Alert,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {LogBox} from 'react-native';
@@ -55,6 +56,16 @@ export default function App() {
   const updateTodos = id => {
     const exitingTodo = todos?.find(x => x.id === id);
     if (!exitingTodo) return;
+
+    Alert.prompt('Edit Todo', 'Update', newUpdateText => {
+      if (newUpdateText) {
+        const updatedTodos = todos.map(item =>
+          item?.id === id ? {...item, text: newUpdateText} : item,
+        );
+        setTodos(updatedTodos);
+        saveTodos(updatedTodos);
+      }
+    });
   };
 
   useEffect(() => {
