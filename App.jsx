@@ -52,6 +52,11 @@ export default function App() {
     saveTodos(updatedTodo);
   };
 
+  const updateTodos = id => {
+    const exitingTodo = todos?.find(x => x.id === id);
+    if (!exitingTodo) return;
+  };
+
   useEffect(() => {
     loadTodos();
   }, []);
@@ -90,6 +95,7 @@ export default function App() {
                 </View>
                 <View style={styles.buttonContainer}>
                   <TouchableOpacity
+                    onPress={() => updateTodos(item?.id)}
                     style={[styles.button, styles.updateButton]}>
                     <Text style={styles.buttonText}>Update</Text>
                   </TouchableOpacity>
