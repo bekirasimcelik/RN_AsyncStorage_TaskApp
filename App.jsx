@@ -57,17 +57,21 @@ export default function App() {
     const exitingTodo = todos?.find(x => x.id === id);
     if (!exitingTodo) return;
 
-    Alert.prompt('Edit Todo', 'Update', newUpdateText => {
-      if (newUpdateText) {
-        const updatedTodos = todos.map(item =>
-          item?.id === id ? {...item, text: newUpdateText} : item,
-        );
-        setTodos(updatedTodos);
-        saveTodos(updatedTodos);
-      }
+    Alert.prompt(
+      'Edit Todo',
+      'Update',
+      newUpdateText => {
+        if (newUpdateText) {
+          const updatedTodos = todos.map(item =>
+            item?.id === id ? {...item, text: newUpdateText} : item,
+          );
+          setTodos(updatedTodos);
+          saveTodos(updatedTodos);
+        }
+      },
       'plain-text',
       exitingTodo.text,
-    });
+    );
   };
 
   useEffect(() => {
